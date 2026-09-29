@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Namaki Browser</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b1220;color:#e5eefc;font:16px system-ui,sans-serif}
+main{max-width:680px;margin:auto;padding:38px 30px}small{color:#80c7ff;letter-spacing:3px}
+h1{font-size:42px;letter-spacing:-2px;margin:12px 0}p{color:#a6b7d1;line-height:1.7}
+form{display:flex;gap:8px;margin:24px 0}input{flex:1;min-width:0;padding:14px;border:1px solid #34425b;border-radius:12px;background:#172338;color:white;font:inherit}
+button,a{border:0;border-radius:12px;padding:14px;background:#65b6ff;color:#071626;font:inherit;cursor:pointer}
+nav{display:flex;gap:12px;flex-wrap:wrap}nav a{text-decoration:none;background:#1b2a43;color:#c9e3ff}
+.card{margin-top:30px;padding:20px;border:1px solid #273852;border-radius:16px}footer{margin-top:24px;color:#8294ae;font-size:13px}
+</style><main><small>NAMAKI OS</small><h1>Your window to the web.</h1>
+<p>Browse with JavaScript, modern CSS, images and Persian text.</p>
+<form id="search"><input id="query" placeholder="Search the web" autofocus><button>Search</button></form>
+<nav><a href="https://www.google.com/">Google</a><a href="https://fa.wikipedia.org/">Wikipedia فارسی</a><a href="browser-demo.html">JavaScript demo</a></nav>
+<div class="card"><strong>A modern browser, inside your desktop.</strong><p>Click, type and scroll just as you would on a website. Use the address bar above to open another page.</p></div>
+<div class="card" dir="rtl"><strong>ساخته شده توسط @Alirem021</strong><p>این نسخه غیررسمی است و توسط kouman ساخته نشده است.</p><a href="https://www.youtube.com/@Alirem021">کانال یوتیوب @Alirem021 را ببین و سابسکرایب کن</a></div>
+<footer>Namaki Browser · Powered by the Chromium engine on Windows</footer></main>
+<script>document.querySelector('#search').onsubmit=e=>{e.preventDefault();location.href='https://www.google.com/search?q='+encodeURIComponent(document.querySelector('#query').value)}</script></html>

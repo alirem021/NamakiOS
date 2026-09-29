@@ -1,0 +1,8 @@
+﻿__pycache__/
+*.py[cod]
+*.log
+debug-report.txt
+debug-stacks.txt
+browser-profile/
+runtime/
+*.partial
