@@ -105,7 +105,13 @@ class Desktop:
     def __init__(self, qmp, state, browser):
         self.qmp, self.state = qmp, Path(state)
         self.frame_lock = threading.Lock()
-        self.last_frame, self.last_time = b'', 0
+        self.last_frame = b""
+        self.frame_stop = threading.Event()
+        self.frame_thread = threading.Thread(
+            target=self._capture_loop,
+            daemon=True,
+        )
+        self.frame_thread.start()
         token = '/' + secrets.token_urlsafe(24)
         desktop = self
 
@@ -183,14 +189,29 @@ class Desktop:
             except (OSError, StopIteration, ValueError):
                 time.sleep(.1)
 
+    def _capture_loop(self):
+        while not self.frame_stop.is_set():
+            started = time.monotonic()
+
+            try:
+                self.qmp.call("screendump", filename="desktop.ppm")
+
+                with Image.open(self.state / "desktop.ppm") as image:
+                    output = io.BytesIO()
+                    image.save(output, format="PNG", compress_level=1)
+
+                with self.frame_lock:
+                    self.last_frame = output.getvalue()
+
+            except (OSError, EOFError, RuntimeError):
+                break
+
+            elapsed = time.monotonic() - started
+            self.frame_stop.wait(max(0, (1 / 45) - elapsed))
+
+
     def frame(self):
         with self.frame_lock:
-            if time.monotonic() - self.last_time > .07:
-                self.qmp.call('screendump', filename='desktop.ppm')
-                with Image.open(self.state / 'desktop.ppm') as image:
-                    output = io.BytesIO()
-                    image.save(output, format='PNG', compress_level=1)
-                self.last_frame, self.last_time = output.getvalue(), time.monotonic()
             return self.last_frame
 
     def input(self, batch):
@@ -216,6 +237,8 @@ class Desktop:
             self.qmp.call('input-send-event', events=events)
 
     def close(self):
+        self.frame_stop.set()
+        self.frame_thread.join(timeout=2)
         self.server.shutdown()
         self.server.server_close()
         if self.process.poll() is None:
